@@ -14,6 +14,19 @@ builder.Services.AddDbContext<StoreContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+
+//Add Cors Policies
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "react-app-client", builder =>
+    {
+        builder.WithOrigins("http://localhost:5173")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddSwaggerGen();
@@ -30,6 +43,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseCors("react-app-client");
 
 app.UseHttpsRedirection();
 
