@@ -14,7 +14,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts()
         {
-            var products = await context.Products.ToListAsync();
+            var products = await context.Products.Where(p => p.PictureUrl.StartsWith("https")).ToListAsync();
 
             if (!products.Any())return NoContent();
             

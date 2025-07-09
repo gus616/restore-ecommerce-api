@@ -52,6 +52,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-DbInitializer.InitDb(app);
+//DbInitializer.InitDb(app);
 
 app.Run();
