@@ -11,5 +11,9 @@
         public required string Type { get; set; }
         public required string Brand { get; set; }
         public int QuantityInStock { get; set; }
+
+        //Navigation
+
+        public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
     }
 }

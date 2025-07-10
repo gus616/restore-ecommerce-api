@@ -1,4 +1,5 @@
 ﻿using API.Data;
+using API.DTOs;
 using API.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -24,11 +25,26 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id) 
         {
-            var product = await context.Products.FirstOrDefaultAsync(p => p.Id == id);
+            var product = await context.Products
+                .Include(p => p.Images)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (product == null) return NotFound();
+
+            var dto = new ProductDto
+            { 
+                Id = id,           
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                PictureUrl = product.PictureUrl,
+                Type = product.Type,
+                Brand = product.Brand,
+                QuantityInStock = product.QuantityInStock,
+                Images = product.Images.Select(i => i.ImageUrl).ToList()
+            };
             
-            return Ok(product);
+            return Ok(dto);
         }
     }
 }
