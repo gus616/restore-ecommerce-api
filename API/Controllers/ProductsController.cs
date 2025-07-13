@@ -46,5 +46,33 @@ namespace API.Controllers
             
             return Ok(dto);
         }
+
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilters()
+        {
+            var brands = await context.Products
+                .Select(p => p.Brand)
+                .Distinct()
+                .ToListAsync();
+
+            var types = await context.Products.Select(p => p.Type)
+                .Distinct()
+                .ToListAsync();
+
+            var minPrice = await context.Products.MinAsync(p => p.Price);
+            var maxPrice = await context.Products.Where(p => p.PictureUrl.StartsWith("https")).MaxAsync(p => p.Price);
+
+            
+
+            var filters = new FilterDto
+            {
+                Brands = brands,
+                Types = types,
+                MinPrice = minPrice,
+                MaxPrice = maxPrice
+            };
+
+            return Ok(filters);
+        }
     }
 }
