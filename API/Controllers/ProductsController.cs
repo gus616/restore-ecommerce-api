@@ -1,6 +1,6 @@
-﻿using API.Data;
-using API.DTOs;
-using API.Entities;
+﻿using Application.Products.Handlers;
+using Application.Products.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -10,43 +10,37 @@ namespace API.Controllers
 {
     [Route("api/[controller]")] //https://localhost:5001/api/products
     [ApiController]
-    public class ProductsController (StoreContext context) : ControllerBase
-    {         
-        [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts()
-        {
-            var products = await context.Products.Where(p => p.PictureUrl.StartsWith("https")).ToListAsync();
+    public class ProductsController(IMediator mediator) : ControllerBase
+    {
+        private readonly IMediator _mediator = mediator;
 
-            if (!products.Any())return NoContent();
-            
-            return Ok(products);
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _mediator.Send(new GetProductListQuery());
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(int id) 
+        public async Task<IActionResult> GetById(int id)
         {
-            var product = await context.Products
-                .Include(p => p.Images)
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (product == null) return NotFound();
-
-            var dto = new ProductDto
-            { 
-                Id = id,           
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price,
-                PictureUrl = product.PictureUrl,
-                Type = product.Type,
-                Brand = product.Brand,
-                QuantityInStock = product.QuantityInStock,
-                Images = product.Images.Select(i => i.ImageUrl).ToList()
-            };
-            
-            return Ok(dto);
+            var result = await _mediator.Send(new GetProductByIdQuery(id));
+            return Ok(result);
         }
 
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilters()
+        {
+            var result = await _mediator.Send(new GetFiltersQuery());
+
+            if(result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
+
+        /*        
         [HttpGet("filters")]
         public async Task<IActionResult> GetFilters()
         {
@@ -73,6 +67,7 @@ namespace API.Controllers
             };
 
             return Ok(filters);
-        }
+        
+        */
     }
 }
