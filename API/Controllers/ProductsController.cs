@@ -1,10 +1,7 @@
-﻿using Application.Products.Handlers;
-using Application.Products.Queries;
+﻿using Application.Products.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
