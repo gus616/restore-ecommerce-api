@@ -102,7 +102,8 @@ builder.Services.AddCors(options =>
     {
         builder.WithOrigins("https://nice-ocean-0db720610.1.azurestaticapps.net")
         .AllowAnyHeader()
-        .AllowAnyMethod();
+        .AllowAnyMethod()
+        .AllowCredentials();
     });
 });
 
