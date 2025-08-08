@@ -83,9 +83,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "react-app-client", builder =>
     {
-        builder.WithOrigins("http://localhost:5173")
+        builder.WithOrigins("http://localhost:5173", "https://nice-ocean-0db720610.1.azurestaticapps.net")
         .AllowAnyHeader()
-        .AllowAnyMethod();
+        .AllowAnyMethod()
+        .AllowCredentials();
     });
 
     options.AddPolicy(name: "swagger", builder => 
@@ -134,7 +135,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("react-app-client");
-app.UseCors("azure-app-client");
 app.UseCors("swagger");
 
 app.UseHttpsRedirection();
