@@ -107,6 +107,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddSwaggerGen();
