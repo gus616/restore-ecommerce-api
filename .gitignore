@@ -48,5 +48,9 @@ _ReSharper.Caches/
 *.log
 logs/
 
+Generated/
+*.g.cs
+
+
 
 appsettings.json

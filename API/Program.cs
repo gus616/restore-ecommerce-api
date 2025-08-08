@@ -96,6 +96,16 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "azure-app-client", builder =>
+    {
+        builder.WithOrigins("https://nice-ocean-0db720610.1.azurestaticapps.net")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddSwaggerGen();
@@ -117,6 +127,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("react-app-client");
+app.UseCors("azure-app-client");
 app.UseCors("swagger");
 
 app.UseHttpsRedirection();
