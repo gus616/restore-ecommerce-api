@@ -1,8 +1,11 @@
-﻿using Application.Products.DTOs;
+﻿using Application.Common.Models;
+using Application.Products.DTOs;
 using Application.Products.Interfaces;
 using Application.Products.Queries;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Application.Products.Handlers
 {
-    public class GetProductListHandler : IRequestHandler<GetProductListQuery, List<ProductDto>>
+    public class GetProductListHandler : IRequestHandler<GetProductListQuery, PaginatedResult<ProductDto>>
     {
         private readonly IProductRepository _repository;
         private readonly IMapper _mapper;
@@ -20,16 +23,21 @@ namespace Application.Products.Handlers
             _repository = repository;
             _mapper = mapper;
         }
-        public async Task<List<ProductDto>> Handle(GetProductListQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedResult<ProductDto>> Handle(GetProductListQuery request, CancellationToken cancellationToken)
         {
-            var products = await _repository.GetProductsAsync();
+            var query = _repository.GetAll();
 
-            if (products == null)
-            {
-                return null;
-            }
+            var totalCount = await query.CountAsync(cancellationToken);
 
-            return _mapper.Map<List<ProductDto>>(products);
+            var items = await query
+                 .OrderBy(p => p.Name) // stable ordering
+                 .Skip((request.PageNumber - 1) * request.PageSize)
+                 .Take(request.PageSize)
+                 .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
+                 .ToListAsync(cancellationToken);
+                
+
+           return new PaginatedResult<ProductDto>(items, totalCount, request.PageNumber, request.PageSize);
         }
     }
 }

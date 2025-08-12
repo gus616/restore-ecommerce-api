@@ -21,6 +21,13 @@ namespace Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
+        public  IQueryable<Product> GetAll()
+        {
+            return  _context.Products
+                .Where(p => p.PictureUrl.StartsWith("http"))
+                .AsNoTracking();
+        }
+
         public async Task<Product> GetProductById(int id)
         {
             return await _context.Products
